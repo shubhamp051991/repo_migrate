@@ -1,0 +1,15 @@
+{
+        "projects": [
+          {
+            "name": "TM_Unstructured",
+            "folder": "TM_Unstructured",
+            "new_repo": "https://github.com/EliLillyCo/lusa-aiassistant-datascience-tm-unstructured",
+            "branches": ["qa","test","stage","main"],
+            "workflows": [
+              {
+                "source_repo_path": ".github/workflows/TM_unstructured-bundle-cd.yml"
+              }
+            ]
+          }
+        ]
+      }
