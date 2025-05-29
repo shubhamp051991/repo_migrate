@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 #
 # Git Migration Script with Skip CI
 # --------------------------------
@@ -24,6 +25,9 @@ cat "$CONFIG_FILE" | jq -c '.projects[]' | while read -r project; do
     echo "  Folder: $PROJECT_FOLDER"
     echo "  Target repo: $NEW_REPO"
     echo "  Branches: $BRANCHES"
+
+    # Collect workflow paths
+    WORKFLOW_PATHS=$(echo "$project" | jq -r '.workflows[].source_repo_path')
     
     # Process each branch separately
     for branch in $BRANCHES; do
@@ -37,11 +41,13 @@ cat "$CONFIG_FILE" | jq -c '.projects[]' | while read -r project; do
         
         # Clone monolith and checkout specific branch
         git clone -b "$branch" --single-branch "$MONOLITH_REPO" source
-        cd source
+        cd source || { echo "❌ cd failed, stopping."; exit 1; }
         
         # Create paths file for git-filter-repo
         echo "$PROJECT_FOLDER" > paths.txt
-        echo ".github" >> paths.txt
+        for wf_path in $WORKFLOW_PATHS; do
+            echo "$wf_path" >> paths.txt
+        done
         
         echo "  Filter paths:"
         cat paths.txt
